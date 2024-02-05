@@ -1,5 +1,4 @@
-// ./app/page.tsx
-//https://api.crawlbase.com/screenshots?token=4HrVHd6RoiajGYYEJsx0QA&height=700&url=https://web3.bio/$%7BlastFramerUsername%7D
+"use client"
 import { getAddressForFid, FrameActionPayload } from "frames.js"
 import { useEffect, useState } from "react";
 import {
@@ -24,7 +23,6 @@ export default async function Home(props:any) {
  
   useEffect(() => {
     getAddress()
-    
   })
 
   const getAddress = async () => {
