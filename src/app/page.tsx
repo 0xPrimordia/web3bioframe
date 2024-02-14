@@ -1,46 +1,110 @@
-"use client"
-import { getAddressForFid, FrameActionPayload } from "frames.js"
-import { useEffect, useState } from "react";
 import {
-  getInsecureHubRpcClient,
-  getSSLHubRpcClient,
-} from "@farcaster/hub-nodejs";
-import { FrameContainer, FrameImage, FrameButton, useFramesReducer, getPreviousFrame, validateActionSignature, FrameInput } from "frames.js/next/server";
+  FrameButton,
+  FrameContainer,
+  FrameImage,
+  FrameInput,
+  FrameReducer,
+  NextServerPageProps,
+  getFrameMessage,
+  getPreviousFrame,
+  useFramesReducer,
+} from "frames.js/next/server";
+import Link from "next/link";
+import { DEBUG_HUB_OPTIONS } from "./constants";
 
-export const hubClient =
-  process.env.HUB_USE_TLS && process.env.HUB_USE_TLS !== "false"
-    ? getSSLHubRpcClient(process.env.HUB_URL!)
-    : getInsecureHubRpcClient(process.env.HUB_URL!);
+type State = {
+  active: string;
+  total_button_presses: number;
+};
 
-const reducer = (state:any, action:any) => ({ count: state.count + 1 });
- 
-export default async function Home(props:any) {
-  const previousFrame = getPreviousFrame(props.searchParams);
-  const validMessage = await validateActionSignature(previousFrame.postBody);
-  const [useAddress, setAddress] = useState()
-  const [state, dispatch] = useFramesReducer(reducer, { count: 0 }, previousFrame);
-  const framesrc = `https://api.crawlbase.com/screenshots?token=${process.env.CRAWLBASE_ID}&height=700&width=366&url=https://web3.bio/$%7BlastFramerUsername%7D`
- 
-  useEffect(() => {
-    getAddress()
-  })
+const initialState = { active: "1", total_button_presses: 0 };
 
-  const getAddress = async () => {
-    const fid = validMessage?.data.frameActionBody.castId?.fid
-    if(!fid) return 
-    const address = await getAddressForFid({
-      fid: fid,
-      hubClient,
-    });
-    return address
+const reducer: FrameReducer<State> = (state, action) => {
+  return {
+    total_button_presses: state.total_button_presses + 1,
+    active: action.postBody?.untrustedData.buttonIndex
+      ? String(action.postBody?.untrustedData.buttonIndex)
+      : "1",
+  };
+};
+
+// This is a react server component only
+export default async function Home({
+  params,
+  searchParams,
+}: NextServerPageProps) {
+  const previousFrame = getPreviousFrame<State>(searchParams);
+
+  const frameMessage = await getFrameMessage(previousFrame.postBody, {
+    ...DEBUG_HUB_OPTIONS,
+  });
+
+  if (frameMessage && !frameMessage?.isValid) {
+    throw new Error("Invalid frame payload");
   }
 
+  const [state, dispatch] = useFramesReducer<State>(
+    reducer,
+    initialState,
+    previousFrame
+  );
+
+  // Here: do a server side side effect either sync or async (using await), such as minting an NFT if you want.
+  // example: load the users credentials & check they have an NFT
+
+  console.log("info: state is:", state);
+
+  if (frameMessage) {
+    const {
+      isValid,
+      buttonIndex,
+      inputText,
+      castId,
+      requesterFid,
+      casterFollowsRequester,
+      requesterFollowsCaster,
+      likedCast,
+      recastedCast,
+      requesterVerifiedAddresses,
+      requesterUserData,
+    } = frameMessage;
+
+    console.log("info: frameMessage is:", frameMessage);
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_HOST || "http://localhost:3000";
+
+  // then, when done, return next frame
   return (
-    <FrameContainer postUrl="/frames" state={state} previousFrame={previousFrame}>
-      <FrameImage src={framesrc} />
-      <FrameButton onClick={dispatch}>
-        {state.count}
-      </FrameButton>
-    </FrameContainer>
+    <div className="p-4">
+      frames.js starter kit. The Template Frame is on this page, it&apos;s in
+      the html meta tags (inspect source).{" "}
+      <Link href={`/debug?url=${baseUrl}`} className="underline">
+        Debug
+      </Link>
+      <FrameContainer
+        postUrl="/frames"
+        pathname="/"
+        state={state}
+        previousFrame={previousFrame}
+      >
+        {/* <FrameImage src="https://framesjs.org/og.png" /> */}
+        <FrameImage aspectRatio="1.91:1">
+          <div tw="w-full h-full bg-slate-700 text-white justify-center items-center">
+            {frameMessage?.inputText ? frameMessage.inputText : "Hello world"}
+          </div>
+        </FrameImage>
+        <FrameInput text="put some text here" />
+        <FrameButton>
+          {state?.active === "1" ? "Active" : "Inactive"}
+        </FrameButton>
+        <FrameButton>
+          {state?.active === "2" ? "Active" : "Inactive"}
+        </FrameButton>
+        <FrameButton action="link" target={`https://web3.bio/${frameMessage?.requesterVerifiedAddresses[0]}`}>
+          External
+        </FrameButton>
+      </FrameContainer>
+    </div>
   );
 }
