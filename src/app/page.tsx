@@ -10,6 +10,7 @@ import {
   useFramesReducer,
 } from "frames.js/next/server";
 import Link from "next/link";
+import Image from "next/image";
 import { DEBUG_HUB_OPTIONS } from "./constants";
 
 type State = {
@@ -90,7 +91,7 @@ export default async function Home({
       >
         {/* <FrameImage src="https://framesjs.org/og.png" /> */}
         <FrameImage aspectRatio="1.91:1">
-          <img src="https://api.crawlbase.com/screenshots?token=4HrVHd6RoiajGYYEJsx0QA&height=700&url=https://web3.bio/$%7BlastFramerUsername%7D" />
+          <Image alt={'splash'} src={'splash.jpg'} />
         </FrameImage>
         <FrameInput text="put some text here" />
         <FrameButton>
