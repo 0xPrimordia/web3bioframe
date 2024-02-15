@@ -7,8 +7,8 @@ export const LOCAL_STORAGE_KEYS = {
 
 /** WARNING: This is a mock hub for development purposes only that does not verify signatures */
 export const DEBUG_HUB_OPTIONS: HubHttpUrlOptions = {
-  hubHttpUrl:
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000/debug/hub"
-      : undefined,
+  hubHttpUrl: "http://cb1d73.hubs.neynar.com:2283"
+    //process.env.NODE_ENV === "development"
+    //  ? "http://localhost:3000/debug/hub"
+    //  : undefined,
 };
