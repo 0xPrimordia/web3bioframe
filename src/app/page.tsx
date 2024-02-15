@@ -91,7 +91,7 @@ export default async function Home({
       >
         {/* <FrameImage src="https://framesjs.org/og.png" /> */}
         <FrameImage aspectRatio="1.91:1">
-          <img alt={'splash'} src={'/splash.jpg'} />
+          <img src="https://github.com/0xPrimordia/web3bioframe/blob/main/public/splash.jpg?raw=true" />
         </FrameImage>
         <FrameInput text="put some text here" />
         <FrameButton>
