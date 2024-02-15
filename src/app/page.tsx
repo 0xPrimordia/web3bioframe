@@ -91,7 +91,7 @@ export default async function Home({
       >
         {/* <FrameImage src="https://framesjs.org/og.png" /> */}
         <FrameImage aspectRatio="1.91:1">
-          <Image alt={'splash'} src={'splash.jpg'} />
+          <img alt={'splash'} src={'/splash.jpg'} />
         </FrameImage>
         <FrameInput text="put some text here" />
         <FrameButton>
