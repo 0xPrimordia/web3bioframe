@@ -90,9 +90,7 @@ export default async function Home({
       >
         {/* <FrameImage src="https://framesjs.org/og.png" /> */}
         <FrameImage aspectRatio="1.91:1">
-          <div tw="w-full h-full bg-slate-700 text-white justify-center items-center">
-            {frameMessage?.inputText ? frameMessage.inputText : "Hello world"}
-          </div>
+          <img src="https://api.crawlbase.com/screenshots?token=4HrVHd6RoiajGYYEJsx0QA&height=700&url=https://web3.bio/$%7BlastFramerUsername%7D" />
         </FrameImage>
         <FrameInput text="put some text here" />
         <FrameButton>
